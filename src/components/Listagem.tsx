@@ -2,15 +2,48 @@ import axios from 'axios';
 import React, { Component, useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import styles from "../App.module.css";
 import { CadastroInterface } from '../interfaces/CadastroInterface';
+import { strict } from 'assert';
 
 const Listagem = () => {
 
     const [usuarios, setUsuarios] = useState<CadastroInterface[]>([]);
+    const[pesquisa,setpesquisa]= useState<string>('');
     const [error, setError] = useState("");
+
+    const handleState =(e: ChangeEvent<HTMLInputElement>)=>{
+        if(e.target.name==="pesquisa"){
+            setpesquisa(e.target.value);
+        }
+    }
+
+    const buscar =(e: FormEvent)=>{
+        e.preventDefault();
+
+        async function fetchData() {
+            try{
+                const Response=await axios.post('http://10.137.9.134:8000/api/findNome',
+                {nome:pesquisa},
+                {
+                    headers:{
+                        "Accept": "application/json",
+                        "Content-Type": "aplication/json"
+                    }
+                }).then(function(response){
+                setUsuarios(response.data.data)
+                }).catch(function (error){
+                    console.log(error);
+                });
+            } catch (error){
+                console.log(error);
+            }
+        }
+        fetchData();
+    }
+
     useEffect(() => {
         async function fetchData() {
             try {
-                const Response = await axios.get('http://10.137.9.132:8000/api/find');
+                const Response = await axios.get('http://10.137.9.134:8000/api/find');
                 setUsuarios(Response.data.data);
 
             } catch (error) {
@@ -25,6 +58,24 @@ const Listagem = () => {
         <div>
             <main className={styles.main}>
                 <div className='container'>
+
+                    <div className='col-md mb-3'>
+                        <div className='card'>
+                            <div className='card-body'>
+                                <h5 className='card-title'>Pesquisar</h5>
+                                <form onSubmit={buscar}className='row'>
+                                    <div className='col-10'>
+                                        <input type="text" name="pesquisa" className='form-control' onChange={handleState}/>
+                                    </div>
+                                    <div className='col-1'>
+                                        <button type='submit' className='btn btn-dark'>Pesquisar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+
                     <div className='card'>
                         <div className='card-body'>
                             <h5 className='carde-title'>Listagem de Usuários</h5>
@@ -39,17 +90,17 @@ const Listagem = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {usuarios.map(usuario=>(
-                                    <tr key={usuario.id}>
-                                        <td>{usuario.id}</td>
-                                        <td>{usuario.nome}</td>
-                                        <td>{usuario.cpf}</td>
-                                        <td>{usuario.email}</td>
-                                        <td>
-                                            <a href="#" className='btn btn-primary btn-sm'>Editar</a>
-                                            <a href="#" className='btn btn-danger btn-sm'>Excluir</a>
-                                        </td>
-                                    </tr>
+                                    {usuarios.map(usuario => (
+                                        <tr key={usuario.id}>
+                                            <td>{usuario.id}</td>
+                                            <td>{usuario.nome}</td>
+                                            <td>{usuario.cpf}</td>
+                                            <td>{usuario.email}</td>
+                                            <td>
+                                                <a href="#" className='btn btn-primary btn-sm'>Editar</a>
+                                                <a href="#" className='btn btn-danger btn-sm'>Excluir</a>
+                                            </td>
+                                        </tr>
                                     ))}
                                 </tbody>
                             </table>
