@@ -3,37 +3,38 @@ import React, { Component, useState, ChangeEvent, FormEvent, useEffect } from 'r
 import styles from "../App.module.css";
 import { CadastroInterface } from '../interfaces/CadastroInterface';
 import { strict } from 'assert';
+import { Link } from 'react-router-dom';
 
 const Listagem = () => {
 
     const [usuarios, setUsuarios] = useState<CadastroInterface[]>([]);
-    const[pesquisa,setpesquisa]= useState<string>('');
+    const [pesquisa, setpesquisa] = useState<string>('');
     const [error, setError] = useState("");
 
-    const handleState =(e: ChangeEvent<HTMLInputElement>)=>{
-        if(e.target.name==="pesquisa"){
+    const handleState = (e: ChangeEvent<HTMLInputElement>) => {
+        if (e.target.name === "pesquisa") {
             setpesquisa(e.target.value);
         }
     }
 
-    const buscar =(e: FormEvent)=>{
+    const buscar = (e: FormEvent) => {
         e.preventDefault();
 
         async function fetchData() {
-            try{
-                const Response=await axios.post('http://10.137.9.134:8000/api/findNome',
-                {nome:pesquisa},
-                {
-                    headers:{
-                        "Accept": "application/json",
-                        "Content-Type": "aplication/json"
-                    }
-                }).then(function(response){
-                setUsuarios(response.data.data)
-                }).catch(function (error){
-                    console.log(error);
-                });
-            } catch (error){
+            try {
+                const Response = await axios.post('http://10.137.9.134:8000/api/findNome',
+                    { nome: pesquisa },
+                    {
+                        headers: {
+                            "Accept": "application/json",
+                            "Content-Type": "aplication/json"
+                        }
+                    }).then(function (response) {
+                        setUsuarios(response.data.data)
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+            } catch (error) {
                 console.log(error);
             }
         }
@@ -63,9 +64,9 @@ const Listagem = () => {
                         <div className='card'>
                             <div className='card-body'>
                                 <h5 className='card-title'>Pesquisar</h5>
-                                <form onSubmit={buscar}className='row'>
+                                <form onSubmit={buscar} className='row'>
                                     <div className='col-10'>
-                                        <input type="text" name="pesquisa" className='form-control' onChange={handleState}/>
+                                        <input type="text" name="pesquisa" className='form-control' onChange={handleState} />
                                     </div>
                                     <div className='col-1'>
                                         <button type='submit' className='btn btn-dark'>Pesquisar</button>
@@ -97,7 +98,7 @@ const Listagem = () => {
                                             <td>{usuario.cpf}</td>
                                             <td>{usuario.email}</td>
                                             <td>
-                                                <a href="#" className='btn btn-primary btn-sm'>Editar</a>
+                                                <Link to={"/editar/" + usuario.id} className='btn btn-primary btn-sm'>Editar</Link>
                                                 <a href="#" className='btn btn-danger btn-sm'>Excluir</a>
                                             </td>
                                         </tr>
